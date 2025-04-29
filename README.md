@@ -20,8 +20,9 @@
 게임 서비스를 제작해본다.
 
 ### 데이터 구조 및 흐름 설계
+<br/> - 클래스 다이어그램
 ![클래스 다이어그램.svg](https://github.com/Seowon-Park/KDT_BE12_Java-OOP_Assignment/blob/master/%ED%81%B4%EB%9E%98%EC%8A%A4%20%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8.svg)
-<br/>▲클래스 다이어그램 ▼시퀀스 다이어그램
+<br/> - 시퀀스 다이어그램
 ![시퀀스 다이어그램.svg](https://github.com/Seowon-Park/KDT_BE12_Java-OOP_Assignment/blob/master/%EC%8B%9C%ED%80%80%EC%8A%A4%20%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8.svg)
 
 
