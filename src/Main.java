@@ -2,9 +2,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int playerNum = GamePlay.setPlayerNum(); //참가인원 받아오기
-        Player[] player = new Player[playerNum]; //참가인원 만큼의 객체 배열
+        Player[] player = new Player[GamePlay.setPlayerNum()]; //참가인원 받아오고, 참가자 만큼의 객체 배열
 
         GamePlay.setPlayer(player, 0); //플레이어 세팅
         GamePlay.showPlayer(player); //플레이어 쇼잉
@@ -96,7 +94,7 @@ class GamePlay{
         for(int i=0; i<player.length; i++){
             System.out.printf("%d위 ",i+1);
             System.out.print(pc[i].nickName);
-            System.out.printf("|금액:%10d | 승:%5d | 패:%5d%n",pc[i].getmoney(),pc[i].win,pc[i].lose);
+            System.out.printf("|금액:%10d | 승:%5d | 패:%5d%n",pc[i].getMoney(),pc[i].win,pc[i].lose);
         }
     }
 }
@@ -106,7 +104,7 @@ class Master{
         deck.shuffle();
         for(int i=0; i< player.length; i++){
             for(int j=0; j<5; j++){
-                player[i].Pcard[j]=deck.cardArr[j+5*i];
+                player[i].pCard[j]=deck.cardArr[j+5*i];
             }
             player[i].setCard();
         }
@@ -125,11 +123,11 @@ class Master{
             player[playNum].roundGrade=0;
 
             for(int i=0;i<5;i++){
-                if(player[playNum].Pcard[i].kind== Card.CLOVER){kind[0]++;}
-                if(player[playNum].Pcard[i].kind== Card.HEART){kind[1]++;}
-                if(player[playNum].Pcard[i].kind== Card.DIAMOND){kind[2]++;}
-                if(player[playNum].Pcard[i].kind== Card.SPADE){kind[3]++;}
-                num[player[playNum].Pcard[i].number-1]++;
+                if(player[playNum].pCard[i].kind== Card.CLOVER){kind[0]++;}
+                if(player[playNum].pCard[i].kind== Card.HEART){kind[1]++;}
+                if(player[playNum].pCard[i].kind== Card.DIAMOND){kind[2]++;}
+                if(player[playNum].pCard[i].kind== Card.SPADE){kind[3]++;}
+                num[player[playNum].pCard[i].number-1]++;
             }
 
             for(int i=0;i<13;i++) {
@@ -158,81 +156,97 @@ class Master{
             else if(twoCard==1){System.out.println("ONE PAIR(10)"); player[playNum].roundGrade=10;}
             else{System.out.println("NO RANK(0)"); player[playNum].roundGrade=0;}
 
-            for(int k=0;k<player[playNum].Pcard.length;k++) {
-                System.out.println(player[playNum].Pcard[k]);
+
+            for(int k=0;k<player[playNum].pCard.length;k++) {
+                System.out.println(player[playNum].pCard[k]);
             }
-        //    System.out.println(Arrays.toString(kind)+","+Arrays.toString(num)); //kind배열 num배열 확인
-        //    System.out.println("S:"+straightCheck+"/4:"+fourCard+"/3:"+treeCard+"/2:"+twoCard+"/F:"+flush); //카운터 잘 작동하는지 확인
+            /*
+            System.out.println(Arrays.toString(kind)+","+Arrays.toString(num)); //kind배열 num배열 확인
+            System.out.println("S:"+straightCheck+"/4:"+fourCard+"/3:"+treeCard+"/2:"+twoCard+"/F:"+flush); //카운터 잘 작동하는지 확인
+        */
         }
+
+        for(int i=0;i<player.length;i++){
+            for(int j=i+1;j<player.length;j++){
+                if(player[i].roundGrade== player[j].roundGrade) {//둘이 동점. 높은 패 가진 사람이 승
+                    for(int k=0; k<5; k++) {
+                        if (player[i].pCard[k].number < player[j].pCard[k].number) {
+                            player[j].roundGrade += 1; break;
+                        } else if (player[i].pCard[k].number > player[j].pCard[k].number) {
+                            player[i].roundGrade += 1; break;
+                        }
+                    }
+                }
+            }
+        }
+        /* roundGrade확인
+        System.out.print(player[0].nickName);
+        System.out.println(": "+player[0].roundGrade+);
+        System.out.print(player[1].nickName);
+        System.out.println(": "+player[1].roundGrade);
+        System.out.print(player[2].nickName);
+        System.out.println(": "+player[2].roundGrade);
+        System.out.print(player[3].nickName);
+        System.out.println(": "+player[3].roundGrade);
+        */
+
     }
     void setWinner(Player[] player){
-        Player[] pc = new Player[player.length];
-        pc = player;
-        Player swp = pc[0];
+        Player swp ;
 
         for(int i=0;i< player.length;i++){
             for(int j=i+1;j<player.length;j++){
-                if(pc[i].roundGrade==pc[j].roundGrade) {//둘이 동점
-                    for(int k=0; k<5; k++) {
-                        if (pc[i].Pcard[k].number < pc[j].Pcard[k].number) {
-                            pc[j].roundGrade += 5; break;
-                        } else if (pc[i].Pcard[k].number > pc[j].Pcard[k].number) {
-                            pc[i].roundGrade += 5; break;
-                        }
-                        //숫자도 전부 똑같을 경우?
-                    }
-                }
-                if(pc[i].roundGrade<pc[j].roundGrade){
-                    swp=pc[i];
-                    pc[i]=pc[j];
-                    pc[j]=swp;
+                if(player[i].roundGrade< player[j].roundGrade){
+                    swp= player[i];
+                    player[i]= player[j];
+                    player[j]=swp;
                 }
             }
         }
-        pc[0].win += 1;
-        pc[0].setmoney(100);
-        for(int i=1 ; i<pc.length; i++){
-            pc[i].lose += 1;
-            pc[i].setmoney(0);
+        player[0].win += 1;
+        player[0].setMoney(100);
+        for(int i = 1; i< player.length; i++){
+            player[i].lose += 1;
+            player[i].setMoney(0);
         }
         System.out.print("승자는...............................");
-        System.out.println(pc[0].nickName);
+        System.out.println(player[0].nickName);
 
     }
 }
 //--- 플레이어 객체
 class Player{
-    static int Pnum = 1;
+    static int pNum = 1;
     char[] nickName={' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '};
     private int money = 10000; //money는 함부로 건들여지면 안되니까..private
     int win=0;
     int lose=0;
     int roundGrade;
-    Card[] Pcard = new Card[5];
+    Card[] pCard = new Card[5];
 
 
     Player(){
-        this("익명" + Pnum++);
+        this("익명" + pNum++);
     }
     Player(String nn){
         for(int i=0; i<nn.length(); i++){
             nickName[i]= nn.charAt(i);
         }
     }
-    int getmoney(){
+    int getMoney(){
         return money;
     }
-    void setmoney(int reward){
+    void setMoney(int reward){
         money += reward;
     }
     void setCard(){ //5장의 카드 오름차순으로 정렬
-        int swp=0;
+        Card swp;
         for(int i=0 ; i<5 ; i++){
             for(int j=i+1; j<5; j++){
-                if(Pcard[i].number<Pcard[j].number){
-                    swp = Pcard[i].number;
-                    Pcard[i].number = Pcard[j].number;
-                    Pcard[i].number = swp;
+                if(pCard[i].number<pCard[j].number){
+                    swp = pCard[i];
+                    pCard[i] = pCard[j];
+                    pCard[j] = swp;
                 }
             }
         }
@@ -252,21 +266,21 @@ class Card{
     int kind;
     int number;
 
-    Card(){this(SPADE,1);}
+    //Card(){this(SPADE,1);}
     Card(int kind, int number){this.kind=kind; this.number=number;}
+    /* 특정 위치 뽑기
     Card(Card c){
         this.kind = c.kind;
         this.number = c.number;
     }
+    */
 
-    //
     public String toString(){
         String[] kinds = {"CLOVER","HEART","DIAMOND","SPADE"};
         String numbers = "0123456789XJQK";
 
         return "kind: "+kinds[this.kind]+", number: "+numbers.charAt(this.number);
     }
-    //
 }
 
 class Deck{
@@ -280,7 +294,7 @@ class Deck{
             for(int n=0 ; n<Card.NUM_MAX ; n++)
                 cardArr[i++] = new Card(k,n+1);
     }
-
+/* 카드 한 장 뽑기
     Card pick(){
         int index = (int)(Math.random()*CARD_NUM);
         return pick(index);
@@ -288,7 +302,7 @@ class Deck{
     Card pick(int index){
         return cardArr[index];
     }
-
+*/
     void shuffle(){
         for (int i = 0; i < cardArr.length; i++) {
             int r = (int) (Math.random() * CARD_NUM);
